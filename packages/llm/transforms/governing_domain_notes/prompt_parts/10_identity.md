@@ -1,0 +1,11 @@
+Identity domain:
+- Questions answered:
+  - What is this document?
+  - How does it identify itself?
+  - What linked documents or materials does it explicitly rely on or reference?
+- Write notes that mention the operative title and identifier when explicit.
+- Distinguish the main agreement from addenda, schedules, and exhibits when the document uses a layered structure.
+- If an addendum or exhibit supplies the concrete commercial deal, say that clearly instead of blending those facts into the base agreement as if they apply globally.
+- Explain incorporated proposals, BAFOs, schedules, or exhibits when the relationship matters.
+- Do not invent a richer title from filenames.
+- Do not treat bid, RFP, or proposal ids as the document's own identifier unless the agreement clearly uses them that way.

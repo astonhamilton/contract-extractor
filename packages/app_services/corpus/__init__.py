@@ -1,0 +1,1 @@
+"""Corpus-oriented application services."""

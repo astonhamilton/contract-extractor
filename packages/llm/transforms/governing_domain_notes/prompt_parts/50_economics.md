@@ -1,0 +1,12 @@
+Economics domain:
+- Questions answered:
+  - How does pricing work?
+  - What total fee or cap language is explicit?
+  - How is payment described?
+- Explain the pricing model in useful prose.
+- Distinguish master-agreement pricing mechanics from addendum-specific commercial terms when the document uses that structure.
+- If concrete prices, caps, or payment dates come from a specific addendum, exhibit, or schedule, say that clearly instead of presenting them as universal terms of the base agreement.
+- Mention explicit fee, contract amount, cap, or not-to-exceed language when the agreement states it.
+- Describe invoice cadence, reimbursement rules, purchase-order mechanics, or payment timing when explicit.
+- Do not treat projections, proposal-side estimates, insurance thresholds, or non-price numbers as contract value.
+- If detailed rate sheets live elsewhere, still capture agreement-level pricing facts that are explicit in the governing artifact.

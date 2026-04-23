@@ -1,0 +1,11 @@
+Parties domain:
+- Questions answered:
+  - Who are the principal parties?
+  - How are their roles described in this artifact?
+  - Are any other entities materially relevant?
+- Identify the main contract-side organizations from the recital and signature block.
+- Use the document's own relationship labels where helpful, such as consultant, contractor, lessor, lessee, licensor, or licensee.
+- Do not turn signers or approvers into parties.
+- Only mention other entities when they materially affect the operative relationship.
+- Keep other material entities narrow: include them only when they help explain the transaction structure, funding structure, oversight, or operative obligations in a way the principal-party notes would otherwise miss.
+- Do not list every agency, regulator, or referenced organization just because it appears in the document.
