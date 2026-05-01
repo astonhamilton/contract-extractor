@@ -1,0 +1,28 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-1);
+  padding: 0 var(--space-2);
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.neutral {
+  background: var(--color-surface-muted);
+  color: var(--color-muted);
+}
+
+.accent {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.success {
+  background: var(--color-success-soft);
+}
+
+.warning {
+  background: var(--color-warning-soft);
+}

@@ -24,6 +24,8 @@ class ThreadPostItemsThreadResponse(BaseSchema):
     """Updated thread shell returned after posting input."""
 
     thread_id: str
+    conversation_id: str
+    current_thread_id: str
     thread_kind: str
     agent_id: str
     title: str

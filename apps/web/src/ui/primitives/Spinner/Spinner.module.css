@@ -1,0 +1,16 @@
+.root {
+  animation: spin 760ms linear infinite;
+  border: 2px solid rgb(98 115 139 / 28%);
+  border-radius: 999px;
+  border-top-color: currentcolor;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

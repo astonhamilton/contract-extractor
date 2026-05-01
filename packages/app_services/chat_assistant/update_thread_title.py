@@ -29,9 +29,11 @@ def update_thread_title(
         thread = get_thread(connection, thread_id)
         if thread is None:
             raise ValueError(f"Unknown thread: {thread_id}")
+        metadata = dict(thread.metadata)
+        metadata["title"] = normalized_title
         updated_thread = update_thread(
             connection,
-            thread.model_copy(update={"title": normalized_title}),
+            thread.model_copy(update={"title": normalized_title, "metadata": metadata}),
         )
         connection.commit()
         return thread_detail_from_record(updated_thread)

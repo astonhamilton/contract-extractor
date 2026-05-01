@@ -1,0 +1,58 @@
+.root {
+  animation: tableIn 260ms ease both;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-3);
+  box-shadow: var(--shadow-1);
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+
+.header {
+  align-items: start;
+  display: flex;
+  gap: var(--space-4);
+  justify-content: space-between;
+}
+
+.header p {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.header h2 {
+  color: var(--color-text);
+  font-size: 20px;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0;
+}
+
+@keyframes tableIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .header {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    animation: none;
+  }
+}

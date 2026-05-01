@@ -1,0 +1,40 @@
+.root {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.left {
+  width: 284px;
+  min-width: 284px;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition:
+    width 160ms ease,
+    min-width 160ms ease;
+}
+
+.collapsed .left {
+  width: 72px;
+  min-width: 72px;
+}
+
+.right {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+@media (max-width: 760px) {
+  .root {
+    flex-direction: column;
+  }
+
+  .left,
+  .collapsed .left {
+    width: 100%;
+    min-width: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+}

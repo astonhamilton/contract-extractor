@@ -19,7 +19,7 @@ def append_items(connection: sqlite3.Connection, items: Sequence[ItemRecord]) ->
         persisted_item = item.model_copy(update={"seq": seq})
         connection.execute(
             """
-            INSERT INTO asst_items (
+            INSERT INTO agent_runtime_items (
                 item_id, thread_id, turn_id, model_call_id, parent_item_id, seq, item_type,
                 role, content_text, name, arguments_json, result_json, provider_item_id,
                 provider_item_type, provider_payload_json, metadata_json, created_at

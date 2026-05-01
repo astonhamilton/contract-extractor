@@ -1,0 +1,35 @@
+.root {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: var(--space-2);
+  min-height: 180px;
+  padding: var(--space-5);
+  color: var(--color-muted);
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.copy {
+  max-width: 560px;
+}
+
+.copy p {
+  margin: 0;
+}
+
+.actions {
+  margin-top: var(--space-2);
+}

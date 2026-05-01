@@ -9,7 +9,7 @@ from packages.data_store.llm_agent_runtime.models import AssistantTurnRecord
 def get_turn(connection: sqlite3.Connection, turn_id: str) -> AssistantTurnRecord | None:
     """Fetch one assistant turn by id."""
     row = connection.execute(
-        "SELECT * FROM asst_turns WHERE turn_id = ?",
+        "SELECT * FROM agent_runtime_turns WHERE turn_id = ?",
         (turn_id,),
     ).fetchone()
     return None if row is None else turn_from_row(row)
@@ -24,7 +24,7 @@ def list_runnable_turns(
     """List queued or active assistant turns ready for the worker."""
     sql = """
         SELECT *
-        FROM asst_turns
+        FROM agent_runtime_turns
         WHERE status IN ('queued', 'active')
     """
     params: list[object] = []
@@ -45,7 +45,7 @@ def list_turns_for_thread(
     rows = connection.execute(
         """
         SELECT *
-        FROM asst_turns
+        FROM agent_runtime_turns
         WHERE thread_id = ?
         ORDER BY queued_at, started_at, turn_id
         """,
@@ -65,7 +65,7 @@ def list_turns_for_thread_page(
     bounded_page = max(page, 1)
     bounded_page_size = max(1, min(page_size, 100))
     count_row = connection.execute(
-        "SELECT COUNT(*) AS count FROM asst_turns WHERE thread_id = ?",
+        "SELECT COUNT(*) AS count FROM agent_runtime_turns WHERE thread_id = ?",
         (thread_id,),
     ).fetchone()
     total = int(count_row["count"] or 0) if count_row is not None else 0
@@ -73,7 +73,7 @@ def list_turns_for_thread_page(
     rows = connection.execute(
         """
         SELECT *
-        FROM asst_turns
+        FROM agent_runtime_turns
         WHERE thread_id = ?
         ORDER BY queued_at DESC, started_at DESC, turn_id DESC
         LIMIT ? OFFSET ?

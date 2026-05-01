@@ -12,7 +12,7 @@ def get_model_call(
 ) -> ModelCallRecord | None:
     """Fetch one model call by id."""
     row = connection.execute(
-        "SELECT * FROM asst_model_calls WHERE model_call_id = ?",
+        "SELECT * FROM agent_runtime_model_calls WHERE model_call_id = ?",
         (model_call_id,),
     ).fetchone()
     return None if row is None else model_call_from_row(row)
@@ -26,7 +26,7 @@ def get_latest_model_call(
     row = connection.execute(
         """
         SELECT *
-        FROM asst_model_calls
+        FROM agent_runtime_model_calls
         WHERE turn_id = ?
         ORDER BY ordinal DESC
         LIMIT 1
@@ -47,7 +47,7 @@ def list_model_calls_for_turn_page(
     bounded_page = max(page, 1)
     bounded_page_size = max(1, min(page_size, 100))
     count_row = connection.execute(
-        "SELECT COUNT(*) AS count FROM asst_model_calls WHERE turn_id = ?",
+        "SELECT COUNT(*) AS count FROM agent_runtime_model_calls WHERE turn_id = ?",
         (turn_id,),
     ).fetchone()
     total = int(count_row["count"] or 0) if count_row is not None else 0
@@ -55,7 +55,7 @@ def list_model_calls_for_turn_page(
     rows = connection.execute(
         """
         SELECT *
-        FROM asst_model_calls
+        FROM agent_runtime_model_calls
         WHERE turn_id = ?
         ORDER BY ordinal DESC, started_at DESC, model_call_id DESC
         LIMIT ? OFFSET ?

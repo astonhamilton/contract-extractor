@@ -8,8 +8,10 @@ from packages.data_store.llm_agent_runtime.queries.items import list_items
 from packages.data_store.llm_agent_runtime.queries.threads import list_threads_page
 
 
-def _title_or_default(title: str | None) -> str:
-    return title.strip() if title and title.strip() else "Untitled thread"
+def _title_or_default(title: str | None, metadata: dict[str, object] | None = None) -> str:
+    metadata_title = None if metadata is None else metadata.get("title")
+    candidate = title if title and title.strip() else metadata_title
+    return candidate.strip() if isinstance(candidate, str) and candidate.strip() else "Untitled thread"
 
 
 def _preview_text(connection: sqlite3.Connection, thread_id: str) -> str:
@@ -42,9 +44,11 @@ def get_threads(
             items=[
                 ThreadListItem(
                     thread_id=thread.thread_id,
+                    conversation_id=thread.thread_id,
+                    current_thread_id=thread.thread_id,
                     thread_kind=thread.thread_kind,
                     agent_id=thread.agent_id,
-                    title=_title_or_default(thread.title),
+                    title=_title_or_default(thread.title, thread.metadata),
                     created_at=thread.created_at.isoformat(),
                     updated_at=thread.updated_at.isoformat(),
                     preview_text=_preview_text(connection, thread.thread_id),

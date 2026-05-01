@@ -1,0 +1,60 @@
+.header {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.kicker {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+
+.copy {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--color-muted);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.label {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+}
+
+.error {
+  margin: 0;
+  border: 1px solid #efc4c4;
+  border-radius: var(--radius-2);
+  background: #fff1f1;
+  color: #9f2525;
+  padding: var(--space-3);
+  font-size: 0.86rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

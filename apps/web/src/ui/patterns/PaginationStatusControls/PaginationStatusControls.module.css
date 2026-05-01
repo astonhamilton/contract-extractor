@@ -1,0 +1,34 @@
+.root {
+  align-items: center;
+  display: inline-flex;
+  gap: var(--space-1);
+}
+
+.button {
+  gap: 2px;
+  min-height: 30px;
+  padding: 0 var(--space-2);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.label {
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 800;
+  min-width: 58px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.loadingSlot {
+  align-items: center;
+  color: #245b78;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  width: 18px;
+}

@@ -10,7 +10,7 @@ from packages.schemas.common import BaseSchema
 class ThreadCreateItemRequest(BaseSchema):
     """One initial item posted at thread creation time."""
 
-    type: Literal["text"]
+    type: Literal["message", "text"]
     data: str = Field(min_length=1)
 
 
@@ -34,6 +34,8 @@ class ThreadCreateThreadResponse(BaseSchema):
     """Created thread shell returned to the client."""
 
     thread_id: str
+    conversation_id: str
+    current_thread_id: str
     thread_kind: str
     agent_id: str
     title: str

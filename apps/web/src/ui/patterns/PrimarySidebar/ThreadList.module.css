@@ -1,0 +1,77 @@
+.root {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow: auto;
+}
+
+.collapsed {
+  align-items: center;
+  flex: 0;
+  overflow: visible;
+}
+
+.item {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  background: var(--color-surface);
+  padding: var(--space-3);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:hover,
+.item:focus-visible {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.itemSelected {
+  background: var(--color-accent-soft);
+  border-color: color-mix(in srgb, var(--color-accent) 38%, var(--color-border));
+}
+
+.item small {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-border-strong);
+}
+
+.dotButton {
+  appearance: none;
+  background: var(--color-border-strong);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  height: 10px;
+  padding: 0;
+  width: 10px;
+}
+
+.dotButtonSelected {
+  background: var(--color-accent);
+}
+
+.notice {
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-2);
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: var(--space-3);
+}

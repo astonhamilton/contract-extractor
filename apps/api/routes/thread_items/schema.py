@@ -7,6 +7,8 @@ class ThreadItemsThreadResponse(BaseSchema):
     """Thread shell returned with one item page."""
 
     thread_id: str
+    conversation_id: str
+    current_thread_id: str
     thread_kind: str
     agent_id: str
     title: str

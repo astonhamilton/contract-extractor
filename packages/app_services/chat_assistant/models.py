@@ -7,6 +7,8 @@ class ThreadListItem(BaseSchema):
     """Sidebar-ready assistant thread summary."""
 
     thread_id: str
+    conversation_id: str
+    current_thread_id: str
     thread_kind: str
     agent_id: str
     title: str
@@ -30,6 +32,8 @@ class ThreadDetail(BaseSchema):
     """Thread shell for the active thread view."""
 
     thread_id: str
+    conversation_id: str
+    current_thread_id: str
     thread_kind: str
     agent_id: str
     title: str

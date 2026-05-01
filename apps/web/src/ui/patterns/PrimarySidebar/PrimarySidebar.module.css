@@ -1,0 +1,149 @@
+.root {
+  height: 100%;
+}
+
+.desktopRail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  height: 100vh;
+  min-height: 0;
+  padding: var(--space-5);
+}
+
+.collapsed .desktopRail {
+  align-items: center;
+  padding-right: var(--space-3);
+  padding-left: var(--space-3);
+}
+
+.threadSection {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+}
+
+.mobileBar {
+  align-items: center;
+  display: none;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-3) var(--space-4);
+}
+
+.mobileMark {
+  align-items: center;
+  background: var(--color-accent-soft);
+  border-radius: var(--radius-2);
+  color: var(--color-accent-strong);
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 800;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+
+.mobileTitle {
+  color: var(--color-text);
+  flex: 1;
+  font-weight: 800;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobileMenu {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 240px;
+}
+
+.mobileMenuGroup {
+  border-bottom: 1px solid var(--color-border);
+  display: grid;
+  gap: var(--space-1);
+  padding-bottom: var(--space-2);
+}
+
+.mobileMenuGroup:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.mobileMenuItem {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-2);
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-weight: 700;
+  gap: var(--space-2);
+  min-height: 38px;
+  padding: 0 var(--space-3);
+  text-align: left;
+  text-decoration: none;
+}
+
+.mobileMenuItem:hover,
+.mobileMenuItem:focus-visible {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  outline: none;
+}
+
+.mobileMenuItem[aria-current="page"] {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-strong);
+}
+
+.mobileMenuItem:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.mobileSession {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.mobileSessionLabel {
+  color: var(--color-text);
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 0 var(--space-3);
+}
+
+.mobileSessionMeta {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0 var(--space-3) var(--space-1);
+}
+
+@media (min-width: 761px) {
+  .mobileMenu {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .root {
+    height: auto;
+  }
+
+  .desktopRail {
+    display: none;
+  }
+
+  .mobileBar {
+    display: flex;
+  }
+}

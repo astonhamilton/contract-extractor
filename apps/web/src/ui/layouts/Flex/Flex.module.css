@@ -1,0 +1,33 @@
+.root {
+  display: flex;
+  min-width: 0;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.fill {
+  flex: 1;
+  min-height: 0;
+}
+
+.gapXs {
+  gap: var(--space-1);
+}
+
+.gapSm {
+  gap: var(--space-2);
+}
+
+.gapMd {
+  gap: var(--space-4);
+}
+
+.gapLg {
+  gap: var(--space-6);
+}

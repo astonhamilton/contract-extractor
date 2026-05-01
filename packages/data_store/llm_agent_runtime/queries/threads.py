@@ -10,7 +10,7 @@ from packages.data_store.llm_agent_runtime.models import ThreadRecord
 def get_thread(connection: sqlite3.Connection, thread_id: str) -> ThreadRecord | None:
     """Fetch one assistant thread by id."""
     row = connection.execute(
-        "SELECT * FROM asst_threads WHERE thread_id = ?",
+        "SELECT * FROM agent_runtime_threads WHERE thread_id = ?",
         (thread_id,),
     ).fetchone()
     return None if row is None else thread_from_row(row)
@@ -24,12 +24,11 @@ def list_threads(
     """List assistant threads ordered by most recently updated."""
     if thread_kind is None:
         rows = connection.execute(
-            "SELECT * FROM asst_threads ORDER BY updated_at DESC, created_at DESC",
+            "SELECT * FROM agent_runtime_threads ORDER BY updated_at DESC, created_at DESC",
         ).fetchall()
     else:
         rows = connection.execute(
-            "SELECT * FROM asst_threads WHERE thread_kind = ? ORDER BY updated_at DESC, created_at DESC",
-            (thread_kind,),
+            "SELECT * FROM agent_runtime_threads ORDER BY updated_at DESC, created_at DESC",
         ).fetchall()
     return [thread_from_row(row) for row in rows]
 
@@ -48,19 +47,18 @@ def list_threads_page(
     bounded_page_size = max(1, min(page_size, 100))
     clauses: list[str] = []
     params: list[object] = []
-    if thread_kind is not None:
-        clauses.append("thread_kind = ?")
-        params.append(thread_kind)
+    # Newer runtime tables no longer store thread_kind; this backend exposes
+    # runtime rows as conversation-compatible threads.
     if status is not None:
         clauses.append("status = ?")
         params.append(status)
     if query:
-        clauses.append("(COALESCE(title, '') LIKE ? OR agent_id LIKE ?)")
+        clauses.append("agent_id LIKE ?")
         like = f"%{query.strip()}%"
-        params.extend([like, like])
+        params.append(like)
     where_sql = f"WHERE {' AND '.join(clauses)}" if clauses else ""
     count_row = connection.execute(
-        f"SELECT COUNT(*) AS count FROM asst_threads {where_sql}",
+        f"SELECT COUNT(*) AS count FROM agent_runtime_threads {where_sql}",
         tuple(params),
     ).fetchone()
     total = int(count_row["count"] or 0) if count_row is not None else 0
@@ -68,7 +66,7 @@ def list_threads_page(
     rows = connection.execute(
         f"""
         SELECT *
-        FROM asst_threads
+        FROM agent_runtime_threads
         {where_sql}
         ORDER BY updated_at DESC, created_at DESC
         LIMIT ? OFFSET ?

@@ -37,19 +37,20 @@ def parse_datetime(value: object) -> datetime | None:
 def next_item_seq(connection: sqlite3.Connection, thread_id: str) -> int:
     """Return the next sequence number for thread items."""
     row = connection.execute(
-        "SELECT COALESCE(MAX(seq), 0) AS max_seq FROM asst_items WHERE thread_id = ?",
+        "SELECT COALESCE(MAX(seq), 0) AS max_seq FROM agent_runtime_items WHERE thread_id = ?",
         (thread_id,),
     ).fetchone()
     return int(row["max_seq"] or 0) + 1
 
 
 def thread_from_row(row: sqlite3.Row) -> ThreadRecord:
-    """Map one `asst_threads` row into the data-store thread model."""
+    """Map one `agent_runtime_threads` row into the data-store thread model."""
+    keys = set(row.keys())
     return ThreadRecord(
         thread_id=str(row["thread_id"]),
-        thread_kind=str(row["thread_kind"]),
+        thread_kind=str(row["thread_kind"]) if "thread_kind" in keys else "conversation",
         agent_id=str(row["agent_id"]),
-        title=row["title"],
+        title=row["title"] if "title" in keys else None,
         status=str(row["status"]),
         phase=str(row["phase"]),
         active_turn_id=row["active_turn_id"],
@@ -65,7 +66,7 @@ def thread_from_row(row: sqlite3.Row) -> ThreadRecord:
 
 
 def turn_from_row(row: sqlite3.Row) -> AssistantTurnRecord:
-    """Map one `asst_turns` row into the data-store turn model."""
+    """Map one `agent_runtime_turns` row into the data-store turn model."""
     return AssistantTurnRecord(
         turn_id=str(row["turn_id"]),
         thread_id=str(row["thread_id"]),
@@ -89,7 +90,7 @@ def turn_from_row(row: sqlite3.Row) -> AssistantTurnRecord:
 
 
 def item_from_row(row: sqlite3.Row) -> ItemRecord:
-    """Map one `asst_items` row into the data-store item model."""
+    """Map one `agent_runtime_items` row into the data-store item model."""
     return ItemRecord(
         item_id=str(row["item_id"]),
         thread_id=str(row["thread_id"]),
@@ -112,7 +113,7 @@ def item_from_row(row: sqlite3.Row) -> ItemRecord:
 
 
 def model_call_from_row(row: sqlite3.Row) -> ModelCallRecord:
-    """Map one `asst_model_calls` row into the data-store model-call model."""
+    """Map one `agent_runtime_model_calls` row into the data-store model-call model."""
     return ModelCallRecord(
         model_call_id=str(row["model_call_id"]),
         thread_id=str(row["thread_id"]),
@@ -136,7 +137,7 @@ def model_call_from_row(row: sqlite3.Row) -> ModelCallRecord:
 
 
 def tool_invocation_from_row(row: sqlite3.Row) -> ToolInvocationRecord:
-    """Map one `asst_tool_invocations` row into the data-store tool-invocation model."""
+    """Map one `agent_runtime_tool_invocations` row into the data-store tool-invocation model."""
     return ToolInvocationRecord(
         tool_invocation_id=str(row["tool_invocation_id"]),
         thread_id=str(row["thread_id"]),

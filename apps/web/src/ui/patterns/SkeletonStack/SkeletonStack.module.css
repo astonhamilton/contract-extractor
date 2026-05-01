@@ -1,0 +1,25 @@
+.root {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.line {
+  display: block;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-muted),
+    #e7ecef,
+    var(--color-surface-muted)
+  );
+}
+
+.line:nth-child(2n) {
+  width: 72%;
+}
+
+.line:nth-child(3n) {
+  width: 54%;
+}

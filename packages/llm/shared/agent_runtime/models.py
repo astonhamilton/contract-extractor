@@ -49,6 +49,7 @@ class ExecutionOptions(BaseSchema):
     provider: str | None = None
     model: str | None = None
     continuity_mode: str | None = None
+    provider_continuity: str | None = None
     provider_extras: dict[str, object] = Field(default_factory=dict)
     reasoning_effort: str | None = None
 

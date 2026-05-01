@@ -11,17 +11,15 @@ def create_thread(connection: sqlite3.Connection, thread: ThreadRecord) -> Threa
     """Insert one assistant thread row."""
     connection.execute(
         """
-        INSERT INTO asst_threads (
-            thread_id, thread_kind, agent_id, title, status, phase, active_turn_id, last_turn_id,
+        INSERT INTO agent_runtime_threads (
+            thread_id, agent_id, status, phase, active_turn_id, last_turn_id,
             execution_options_json, provider_continuations_json,
             metadata_json, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             thread.thread_id,
-            thread.thread_kind,
             thread.agent_id,
-            thread.title,
             thread.status,
             thread.phase,
             thread.active_turn_id,
@@ -41,16 +39,14 @@ def update_thread(connection: sqlite3.Connection, thread: ThreadRecord) -> Threa
     thread = thread.model_copy(update={"updated_at": utc_now()})
     connection.execute(
         """
-        UPDATE asst_threads
-        SET thread_kind = ?, agent_id = ?, title = ?, status = ?, phase = ?, active_turn_id = ?, last_turn_id = ?,
+        UPDATE agent_runtime_threads
+        SET agent_id = ?, status = ?, phase = ?, active_turn_id = ?, last_turn_id = ?,
             execution_options_json = ?, provider_continuations_json = ?,
             metadata_json = ?, updated_at = ?
         WHERE thread_id = ?
         """,
         (
-            thread.thread_kind,
             thread.agent_id,
-            thread.title,
             thread.status,
             thread.phase,
             thread.active_turn_id,
@@ -65,6 +61,16 @@ def update_thread(connection: sqlite3.Connection, thread: ThreadRecord) -> Threa
     return thread
 
 
+def delete_thread(connection: sqlite3.Connection, thread_id: str) -> bool:
+    """Delete one assistant thread and dependent runtime rows."""
+
+    cursor = connection.execute(
+        "DELETE FROM agent_runtime_threads WHERE thread_id = ?",
+        (thread_id,),
+    )
+    return cursor.rowcount > 0
+
+
 def activate_thread_for_new_turn(
     connection: sqlite3.Connection,
     *,
@@ -77,7 +83,7 @@ def activate_thread_for_new_turn(
     now = utc_now().isoformat()
     row = connection.execute(
         """
-        UPDATE asst_threads
+        UPDATE agent_runtime_threads
         SET active_turn_id = ?, status = ?, phase = ?, updated_at = ?
         WHERE thread_id = ?
           AND active_turn_id IS NULL
@@ -100,7 +106,7 @@ def recover_thread_to_turn(
     now = utc_now().isoformat()
     row = connection.execute(
         """
-        UPDATE asst_threads
+        UPDATE agent_runtime_threads
         SET status = ?, phase = ?, active_turn_id = ?, updated_at = ?
         WHERE thread_id = ?
           AND (active_turn_id IS NULL OR active_turn_id = ?)

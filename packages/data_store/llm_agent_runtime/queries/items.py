@@ -9,7 +9,7 @@ from packages.data_store.llm_agent_runtime.models import ItemRecord
 def list_items(connection: sqlite3.Connection, thread_id: str) -> list[ItemRecord]:
     """List persisted thread items in sequence order."""
     rows = connection.execute(
-        "SELECT * FROM asst_items WHERE thread_id = ? ORDER BY seq",
+        "SELECT * FROM agent_runtime_items WHERE thread_id = ? ORDER BY seq",
         (thread_id,),
     ).fetchall()
     return [item_from_row(row) for row in rows]
@@ -33,7 +33,7 @@ def list_items_page(
         params.append(item_type)
     where_sql = " AND ".join(clauses)
     count_row = connection.execute(
-        f"SELECT COUNT(*) AS count FROM asst_items WHERE {where_sql}",
+        f"SELECT COUNT(*) AS count FROM agent_runtime_items WHERE {where_sql}",
         tuple(params),
     ).fetchone()
     total = int(count_row["count"] or 0) if count_row is not None else 0
@@ -41,7 +41,7 @@ def list_items_page(
     rows = connection.execute(
         f"""
         SELECT *
-        FROM asst_items
+        FROM agent_runtime_items
         WHERE {where_sql}
         ORDER BY seq DESC
         LIMIT ? OFFSET ?
@@ -60,7 +60,7 @@ def list_items_after(
     """List persisted thread items strictly after one sequence cursor."""
 
     rows = connection.execute(
-        "SELECT * FROM asst_items WHERE thread_id = ? AND seq > ? ORDER BY seq",
+        "SELECT * FROM agent_runtime_items WHERE thread_id = ? AND seq > ? ORDER BY seq",
         (thread_id, after_seq),
     ).fetchall()
     return [item_from_row(row) for row in rows]
@@ -70,7 +70,7 @@ def max_item_seq(connection: sqlite3.Connection, thread_id: str) -> int:
     """Return the current maximum item sequence for one thread."""
 
     row = connection.execute(
-        "SELECT COALESCE(MAX(seq), 0) AS max_seq FROM asst_items WHERE thread_id = ?",
+        "SELECT COALESCE(MAX(seq), 0) AS max_seq FROM agent_runtime_items WHERE thread_id = ?",
         (thread_id,),
     ).fetchone()
     if row is None:

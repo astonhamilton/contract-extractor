@@ -1,0 +1,24 @@
+.root {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+}
+
+.group {
+  display: contents;
+}
+
+.groupHeader {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}

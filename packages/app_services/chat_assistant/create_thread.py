@@ -21,14 +21,14 @@ def _explicit_title(title: str | None) -> str | None:
 
 
 def _coerce_initial_user_text(items: list[ThreadInputItem]) -> str | None:
-    """Return one supported initial text item or None when no items were supplied."""
+    """Return one supported initial user message or None when no items were supplied."""
     if not items:
         return None
     if len(items) != 1:
         raise ValueError("At most one initial input item is supported.")
     item = items[0]
-    if item.type != "text":
-        raise ValueError("Only initial input items of type 'text' are supported.")
+    if item.type not in {"message", "text"}:
+        raise ValueError("Only initial input items of type 'message' or 'text' are supported.")
     text = item.data.strip()
     if not text:
         raise ValueError("Initial input text cannot be empty.")
@@ -67,6 +67,7 @@ def create_thread(
         db,
         agent_id=_CORPUS_ASSISTANT_AGENT_ID,
         title=initial_title,
+        metadata={"title": initial_title},
         initial_user_text=initial_user_text,
     )
 

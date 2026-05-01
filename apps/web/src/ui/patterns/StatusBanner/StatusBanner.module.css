@@ -1,0 +1,21 @@
+.root {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-2);
+  padding: var(--space-3);
+  color: var(--color-muted);
+}
+
+.neutral {
+  background: var(--color-surface-muted);
+}
+
+.warning {
+  background: var(--color-warning-soft);
+  color: var(--color-text);
+}
+
+.danger {
+  border-color: #f2c8c8;
+  background: #fff0f0;
+  color: #8a1f1f;
+}

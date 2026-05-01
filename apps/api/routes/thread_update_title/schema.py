@@ -15,6 +15,8 @@ class ThreadUpdateTitleResponse(BaseSchema):
     """Updated thread shell returned after renaming one thread."""
 
     thread_id: str
+    conversation_id: str
+    current_thread_id: str
     thread_kind: str
     agent_id: str
     title: str

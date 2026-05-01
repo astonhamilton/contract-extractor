@@ -1,10 +1,8 @@
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE IF NOT EXISTS asst_threads (
+CREATE TABLE IF NOT EXISTS agent_runtime_threads (
     thread_id TEXT PRIMARY KEY,
-    thread_kind TEXT NOT NULL DEFAULT 'conversation',
     agent_id TEXT NOT NULL,
-    title TEXT,
     status TEXT NOT NULL DEFAULT 'active',
     phase TEXT NOT NULL DEFAULT 'idle',
     active_turn_id TEXT,
@@ -16,7 +14,7 @@ CREATE TABLE IF NOT EXISTS asst_threads (
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS asst_turns (
+CREATE TABLE IF NOT EXISTS agent_runtime_turns (
     turn_id TEXT PRIMARY KEY,
     thread_id TEXT NOT NULL,
     agent_id TEXT NOT NULL,
@@ -33,10 +31,10 @@ CREATE TABLE IF NOT EXISTS asst_turns (
     queued_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed_at TEXT,
-    FOREIGN KEY (thread_id) REFERENCES asst_threads(thread_id) ON DELETE CASCADE
+    FOREIGN KEY (thread_id) REFERENCES agent_runtime_threads(thread_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS asst_model_calls (
+CREATE TABLE IF NOT EXISTS agent_runtime_model_calls (
     model_call_id TEXT PRIMARY KEY,
     thread_id TEXT NOT NULL,
     turn_id TEXT NOT NULL,
@@ -55,11 +53,11 @@ CREATE TABLE IF NOT EXISTS asst_model_calls (
     heartbeat_at TEXT,
     started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed_at TEXT,
-    FOREIGN KEY (thread_id) REFERENCES asst_threads(thread_id) ON DELETE CASCADE,
-    FOREIGN KEY (turn_id) REFERENCES asst_turns(turn_id) ON DELETE CASCADE
+    FOREIGN KEY (thread_id) REFERENCES agent_runtime_threads(thread_id) ON DELETE CASCADE,
+    FOREIGN KEY (turn_id) REFERENCES agent_runtime_turns(turn_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS asst_items (
+CREATE TABLE IF NOT EXISTS agent_runtime_items (
     item_id TEXT PRIMARY KEY,
     thread_id TEXT NOT NULL,
     turn_id TEXT,
@@ -77,13 +75,13 @@ CREATE TABLE IF NOT EXISTS asst_items (
     provider_payload_json TEXT NOT NULL DEFAULT '{}',
     metadata_json TEXT NOT NULL DEFAULT '{}',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (thread_id) REFERENCES asst_threads(thread_id) ON DELETE CASCADE,
-    FOREIGN KEY (turn_id) REFERENCES asst_turns(turn_id) ON DELETE SET NULL,
-    FOREIGN KEY (model_call_id) REFERENCES asst_model_calls(model_call_id) ON DELETE SET NULL,
-    FOREIGN KEY (parent_item_id) REFERENCES asst_items(item_id) ON DELETE SET NULL
+    FOREIGN KEY (thread_id) REFERENCES agent_runtime_threads(thread_id) ON DELETE CASCADE,
+    FOREIGN KEY (turn_id) REFERENCES agent_runtime_turns(turn_id) ON DELETE SET NULL,
+    FOREIGN KEY (model_call_id) REFERENCES agent_runtime_model_calls(model_call_id) ON DELETE SET NULL,
+    FOREIGN KEY (parent_item_id) REFERENCES agent_runtime_items(item_id) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS asst_tool_invocations (
+CREATE TABLE IF NOT EXISTS agent_runtime_tool_invocations (
     tool_invocation_id TEXT PRIMARY KEY,
     thread_id TEXT NOT NULL,
     turn_id TEXT,
@@ -99,9 +97,9 @@ CREATE TABLE IF NOT EXISTS asst_tool_invocations (
     heartbeat_at TEXT,
     started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     completed_at TEXT,
-    FOREIGN KEY (thread_id) REFERENCES asst_threads(thread_id) ON DELETE CASCADE,
-    FOREIGN KEY (turn_id) REFERENCES asst_turns(turn_id) ON DELETE SET NULL,
-    FOREIGN KEY (model_call_id) REFERENCES asst_model_calls(model_call_id) ON DELETE SET NULL,
-    FOREIGN KEY (tool_call_item_id) REFERENCES asst_items(item_id) ON DELETE SET NULL,
-    FOREIGN KEY (tool_result_item_id) REFERENCES asst_items(item_id) ON DELETE SET NULL
+    FOREIGN KEY (thread_id) REFERENCES agent_runtime_threads(thread_id) ON DELETE CASCADE,
+    FOREIGN KEY (turn_id) REFERENCES agent_runtime_turns(turn_id) ON DELETE SET NULL,
+    FOREIGN KEY (model_call_id) REFERENCES agent_runtime_model_calls(model_call_id) ON DELETE SET NULL,
+    FOREIGN KEY (tool_call_item_id) REFERENCES agent_runtime_items(item_id) ON DELETE SET NULL,
+    FOREIGN KEY (tool_result_item_id) REFERENCES agent_runtime_items(item_id) ON DELETE SET NULL
 );

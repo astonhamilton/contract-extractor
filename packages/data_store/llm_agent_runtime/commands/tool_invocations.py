@@ -34,7 +34,7 @@ def create_tool_invocations(
     for invocation in invocations:
         connection.execute(
             """
-            INSERT INTO asst_tool_invocations (
+            INSERT INTO agent_runtime_tool_invocations (
                 tool_invocation_id, thread_id, turn_id, model_call_id, tool_call_item_id,
                 tool_result_item_id, tool_name, arguments_json, result_json, status,
                 error_text, worker_id, heartbeat_at, started_at, completed_at
@@ -68,7 +68,7 @@ def update_tool_invocation(
     """Update one tool invocation row."""
     connection.execute(
         """
-        UPDATE asst_tool_invocations
+        UPDATE agent_runtime_tool_invocations
         SET model_call_id = ?, tool_call_item_id = ?, tool_result_item_id = ?, tool_name = ?,
             arguments_json = ?, result_json = ?, status = ?, error_text = ?,
             worker_id = ?, heartbeat_at = ?, started_at = ?, completed_at = ?
@@ -105,7 +105,7 @@ def claim_tool_invocation(
     with sqlite_transaction(connection):
         row = connection.execute(
             """
-            UPDATE asst_tool_invocations
+            UPDATE agent_runtime_tool_invocations
             SET status = 'running',
                 worker_id = ?,
                 heartbeat_at = ?,
@@ -141,7 +141,7 @@ def update_tool_invocation_heartbeat(
     """Refresh one running tool invocation heartbeat timestamp."""
     connection.execute(
         """
-        UPDATE asst_tool_invocations
+        UPDATE agent_runtime_tool_invocations
         SET heartbeat_at = ?
         WHERE tool_invocation_id = ?
           AND status = 'running'
@@ -174,7 +174,7 @@ def reset_stale_tool_invocation(
     with sqlite_transaction(connection):
         row = connection.execute(
             """
-            UPDATE asst_tool_invocations
+            UPDATE agent_runtime_tool_invocations
             SET status = 'requested',
                 worker_id = NULL,
                 heartbeat_at = NULL,
@@ -207,7 +207,7 @@ def fail_stale_tool_invocation(
     with sqlite_transaction(connection):
         row = connection.execute(
             """
-            UPDATE asst_tool_invocations
+            UPDATE agent_runtime_tool_invocations
             SET status = 'failed',
                 error_text = ?,
                 worker_id = NULL,
@@ -271,7 +271,7 @@ def fail_stale_tool_invocation_turn(
     with sqlite_transaction(connection):
         recovered_invocation = connection.execute(
             """
-            UPDATE asst_tool_invocations
+            UPDATE agent_runtime_tool_invocations
             SET status = 'failed',
                 error_text = ?,
                 worker_id = NULL,
@@ -301,7 +301,7 @@ def fail_stale_tool_invocation_turn(
         )
         updated_turn = connection.execute(
             """
-            UPDATE asst_turns
+            UPDATE agent_runtime_turns
             SET status = ?, phase = ?, error_json = ?, provider_response_id = ?, provider_conversation_id = ?,
                 claim_worker_id = ?, heartbeat_at = ?, metadata_json = ?, queued_at = ?, started_at = ?, completed_at = ?,
                 execution_options_json = ?, agent_id = ?

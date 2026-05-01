@@ -17,7 +17,7 @@ def create_turn(
     """Insert one assistant turn row."""
     connection.execute(
         """
-        INSERT INTO asst_turns (
+        INSERT INTO agent_runtime_turns (
             turn_id, thread_id, agent_id, execution_options_json, status, phase,
             usage_json, error_json, provider_response_id, provider_conversation_id,
             claim_worker_id, heartbeat_at,
@@ -53,7 +53,7 @@ def update_turn(
     """Update one assistant turn row."""
     connection.execute(
         """
-        UPDATE asst_turns
+        UPDATE agent_runtime_turns
         SET agent_id = ?, execution_options_json = ?, status = ?, phase = ?,
             usage_json = ?, error_json = ?, provider_response_id = ?,
             provider_conversation_id = ?, claim_worker_id = ?, heartbeat_at = ?, metadata_json = ?, queued_at = ?,
@@ -93,7 +93,7 @@ def claim_turn(
     with sqlite_transaction(connection):
         row = connection.execute(
             """
-            UPDATE asst_turns
+            UPDATE agent_runtime_turns
             SET claim_worker_id = ?, heartbeat_at = ?
             WHERE turn_id = ?
               AND status IN ('queued', 'active')
@@ -128,7 +128,7 @@ def claim_next_runnable_turn(
         sql = """
             WITH candidate AS (
                 SELECT turn_id
-                FROM asst_turns
+                FROM agent_runtime_turns
                 WHERE status IN ('queued', 'active')
                   AND (
                     claim_worker_id IS NULL
@@ -142,8 +142,8 @@ def claim_next_runnable_turn(
                           phase = 'executing_model'
                           AND NOT EXISTS (
                             SELECT 1
-                            FROM asst_model_calls mc
-                            WHERE mc.turn_id = asst_turns.turn_id
+                            FROM agent_runtime_model_calls mc
+                            WHERE mc.turn_id = agent_runtime_turns.turn_id
                               AND mc.status = 'running'
                               AND mc.heartbeat_at IS NOT NULL
                               AND mc.heartbeat_at >= ?
@@ -153,8 +153,8 @@ def claim_next_runnable_turn(
                           phase = 'executing_tools'
                           AND NOT EXISTS (
                             SELECT 1
-                            FROM asst_tool_invocations ti
-                            WHERE ti.turn_id = asst_turns.turn_id
+                            FROM agent_runtime_tool_invocations ti
+                            WHERE ti.turn_id = agent_runtime_turns.turn_id
                               AND ti.status = 'running'
                               AND ti.heartbeat_at IS NOT NULL
                               AND ti.heartbeat_at >= ?
@@ -177,7 +177,7 @@ def claim_next_runnable_turn(
                 ORDER BY queued_at, started_at
                 LIMIT 1
             )
-            UPDATE asst_turns
+            UPDATE agent_runtime_turns
             SET claim_worker_id = ?, heartbeat_at = ?
             WHERE turn_id = (SELECT turn_id FROM candidate)
               AND status IN ('queued', 'active')
@@ -193,8 +193,8 @@ def claim_next_runnable_turn(
                       phase = 'executing_model'
                       AND NOT EXISTS (
                         SELECT 1
-                        FROM asst_model_calls mc
-                        WHERE mc.turn_id = asst_turns.turn_id
+                        FROM agent_runtime_model_calls mc
+                        WHERE mc.turn_id = agent_runtime_turns.turn_id
                           AND mc.status = 'running'
                           AND mc.heartbeat_at IS NOT NULL
                           AND mc.heartbeat_at >= ?
@@ -204,8 +204,8 @@ def claim_next_runnable_turn(
                       phase = 'executing_tools'
                       AND NOT EXISTS (
                         SELECT 1
-                        FROM asst_tool_invocations ti
-                        WHERE ti.turn_id = asst_turns.turn_id
+                        FROM agent_runtime_tool_invocations ti
+                        WHERE ti.turn_id = agent_runtime_turns.turn_id
                           AND ti.status = 'running'
                           AND ti.heartbeat_at IS NOT NULL
                           AND ti.heartbeat_at >= ?
@@ -240,7 +240,7 @@ def update_turn_heartbeat(
     """Refresh the heartbeat for one claimed assistant turn."""
     connection.execute(
         """
-        UPDATE asst_turns
+        UPDATE agent_runtime_turns
         SET heartbeat_at = ?
         WHERE turn_id = ?
           AND claim_worker_id = ?
@@ -262,7 +262,7 @@ def recover_stale_turn_claims(
     rows = connection.execute(
         """
         SELECT turn_id, phase
-        FROM asst_turns
+        FROM agent_runtime_turns
         WHERE status IN ('queued', 'active')
           AND claim_worker_id IS NOT NULL
           AND heartbeat_at IS NOT NULL
@@ -279,7 +279,7 @@ def recover_stale_turn_claims(
             model_row = connection.execute(
                 """
                 SELECT status, heartbeat_at
-                FROM asst_model_calls
+                FROM agent_runtime_model_calls
                 WHERE turn_id = ?
                 ORDER BY ordinal DESC
                 LIMIT 1
@@ -297,7 +297,7 @@ def recover_stale_turn_claims(
             active_tool_row = connection.execute(
                 """
                 SELECT 1
-                FROM asst_tool_invocations
+                FROM agent_runtime_tool_invocations
                 WHERE turn_id = ?
                   AND status = 'running'
                   AND heartbeat_at IS NOT NULL
@@ -312,7 +312,7 @@ def recover_stale_turn_claims(
         with sqlite_transaction(connection):
             recovered_row = connection.execute(
                 """
-                UPDATE asst_turns
+                UPDATE agent_runtime_turns
                 SET claim_worker_id = NULL,
                     heartbeat_at = NULL
                 WHERE turn_id = ?

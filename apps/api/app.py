@@ -7,6 +7,17 @@ from fastapi import FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 
 from apps.api.agent_runtime import build_embedded_agent_runtime_service
+from apps.api.auth import (
+    AuthenticationMiddleware,
+    build_login_rate_limiter,
+    install_session_middleware,
+)
+from apps.api.routes.auth_login.handler import auth_login
+from apps.api.routes.auth_login.schema import AuthLoginResponse
+from apps.api.routes.auth_logout.handler import auth_logout
+from apps.api.routes.auth_logout.schema import AuthLogoutResponse
+from apps.api.routes.auth_session.handler import auth_session
+from apps.api.routes.auth_session.schema import AuthSessionResponse
 from apps.api.db_startup import ensure_app_db_schema
 from apps.api.routes.corpus_document_detail.handler import corpus_document_detail
 from apps.api.routes.corpus_document_detail.schema import CorpusDocumentDetailResponse
@@ -32,6 +43,7 @@ from apps.api.routes.thread_detail.handler import thread_detail
 from apps.api.routes.thread_detail.schema import ThreadDetailResponse
 from apps.api.routes.thread_create.handler import thread_create
 from apps.api.routes.thread_create.schema import ThreadCreateResponse
+from apps.api.routes.thread_delete.handler import thread_delete
 from apps.api.routes.thread_items.handler import thread_items
 from apps.api.routes.thread_items.schema import ThreadItemsResponse
 from apps.api.routes.thread_post_items.handler import thread_post_items
@@ -53,7 +65,7 @@ from apps.api.routes.turn_tool_invocations.handler import turn_tool_invocations
 from apps.api.routes.turn_tool_invocations.schema import TurnToolInvocationsResponse
 from apps.api.routes.web_app.handler import serve_web_app_index, web_app_dist_dir
 from packages.data_store.connect import default_db
-from apps.api.settings import ApiSettings
+from apps.api.settings import ApiAuthSettings, ApiSettings
 
 LOGGER = logging.getLogger(__name__)
 
@@ -80,6 +92,10 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+auth_settings = ApiAuthSettings.from_env()
+app.state.login_rate_limiter = build_login_rate_limiter(auth_settings)
+app.add_middleware(AuthenticationMiddleware)
+install_session_middleware(app, auth_settings)
 
 
 def _parse_debug_delay_ms(request: Request, *, max_delay_ms: int) -> int:
@@ -120,6 +136,56 @@ async def debug_delay_middleware(request: Request, call_next) -> Response:
 
 
 app.get("/api", response_model=RootResponse)(root)
+app.get("/api/health", response_model=HealthResponse)(health)
+app.get("/api/stats", response_model=AppStatsResponse)(stats)
+app.post("/api/auth/login", response_model=AuthLoginResponse)(auth_login)
+app.post("/api/auth/logout", response_model=AuthLogoutResponse)(auth_logout)
+app.get("/api/auth/session", response_model=AuthSessionResponse)(auth_session)
+app.get("/api/threads", response_model=ThreadsResponse)(threads)
+app.post("/api/threads", response_model=ThreadCreateResponse)(thread_create)
+app.delete("/api/threads/{thread_id}", status_code=204)(thread_delete)
+app.post("/api/threads/title-suggestion", response_model=ThreadTitleSuggestionResponse)(
+    thread_title_suggestion
+)
+app.get("/api/threads/{thread_id}", response_model=ThreadDetailResponse)(thread_detail)
+app.patch("/api/threads/{thread_id}/title", response_model=ThreadUpdateTitleResponse)(
+    thread_update_title
+)
+app.get("/api/threads/{thread_id}/items", response_model=ThreadItemsResponse)(thread_items)
+app.post("/api/threads/{thread_id}/items", response_model=ThreadPostItemsResponse)(
+    thread_post_items
+)
+app.get("/api/threads/{thread_id}/stream")(thread_stream)
+app.get("/api/threads/{thread_id}/turns", response_model=ThreadTurnsResponse)(thread_turns)
+app.get("/api/turns/{turn_id}", response_model=TurnDetailResponse)(turn_detail)
+app.get("/api/turns/{turn_id}/model-calls", response_model=TurnModelCallsResponse)(
+    turn_model_calls
+)
+app.get(
+    "/api/turns/{turn_id}/tool-invocations",
+    response_model=TurnToolInvocationsResponse,
+)(turn_tool_invocations)
+app.get("/api/corpus/summary", response_model=CorpusSummaryResponse)(corpus_summary)
+app.get("/api/corpus/documents", response_model=CorpusDocumentsResponse)(corpus_documents)
+app.get("/api/corpus/documents/{doc_id}", response_model=CorpusDocumentDetailResponse)(
+    corpus_document_detail
+)
+app.get(
+    "/api/corpus/documents/{doc_id}/page-notes",
+    response_model=CorpusDocumentPageNotesResponse,
+)(corpus_document_page_notes)
+app.get(
+    "/api/corpus/documents/{doc_id}/pages",
+    response_model=CorpusDocumentPagesResponse,
+)(corpus_document_pages)
+app.get(
+    "/api/corpus/documents/{doc_id}/pages/{page_number}",
+    response_model=CorpusDocumentPageDetailResponse,
+)(corpus_document_page_detail)
+app.get(
+    "/api/corpus/documents/{doc_id}/notes",
+    response_model=CorpusDocumentNotesResponse,
+)(corpus_document_notes)
 app.get("/health", response_model=HealthResponse)(health)
 app.get("/stats", response_model=AppStatsResponse)(stats)
 app.get("/threads", response_model=ThreadsResponse)(threads)

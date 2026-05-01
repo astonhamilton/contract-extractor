@@ -1,0 +1,25 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-6);
+}
+
+.content[data-inset="none"] {
+  padding: 0;
+}
+
+@media (max-width: 760px) {
+  .root {
+    height: auto;
+    min-height: calc(100vh - 84px);
+  }
+}

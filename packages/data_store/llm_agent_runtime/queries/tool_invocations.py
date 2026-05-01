@@ -13,7 +13,7 @@ def get_tool_invocation(
 ) -> ToolInvocationRecord | None:
     """Fetch one tool invocation by id."""
     row = connection.execute(
-        "SELECT * FROM asst_tool_invocations WHERE tool_invocation_id = ?",
+        "SELECT * FROM agent_runtime_tool_invocations WHERE tool_invocation_id = ?",
         (tool_invocation_id,),
     ).fetchone()
     return None if row is None else tool_invocation_from_row(row)
@@ -27,7 +27,7 @@ def list_pending_tool_invocations(
     rows = connection.execute(
         """
         SELECT *
-        FROM asst_tool_invocations
+        FROM agent_runtime_tool_invocations
         WHERE turn_id = ?
           AND status IN ('requested', 'running')
         ORDER BY started_at, tool_invocation_id
@@ -46,8 +46,8 @@ def list_stale_tool_invocations(
     rows = connection.execute(
         """
         SELECT ti.*
-        FROM asst_tool_invocations ti
-        JOIN asst_turns t ON t.turn_id = ti.turn_id
+        FROM agent_runtime_tool_invocations ti
+        JOIN agent_runtime_turns t ON t.turn_id = ti.turn_id
         WHERE ti.status = 'running'
           AND ti.heartbeat_at IS NOT NULL
           AND ti.heartbeat_at < ?
@@ -71,7 +71,7 @@ def list_tool_invocations_for_turn_page(
     bounded_page = max(page, 1)
     bounded_page_size = max(1, min(page_size, 100))
     count_row = connection.execute(
-        "SELECT COUNT(*) AS count FROM asst_tool_invocations WHERE turn_id = ?",
+        "SELECT COUNT(*) AS count FROM agent_runtime_tool_invocations WHERE turn_id = ?",
         (turn_id,),
     ).fetchone()
     total = int(count_row["count"] or 0) if count_row is not None else 0
@@ -79,7 +79,7 @@ def list_tool_invocations_for_turn_page(
     rows = connection.execute(
         """
         SELECT *
-        FROM asst_tool_invocations
+        FROM agent_runtime_tool_invocations
         WHERE turn_id = ?
         ORDER BY started_at DESC, tool_invocation_id DESC
         LIMIT ? OFFSET ?

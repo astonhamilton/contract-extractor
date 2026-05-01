@@ -1,0 +1,32 @@
+.root {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.scroller {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-6);
+  scroll-behavior: smooth;
+}
+
+.working {
+  align-items: center;
+  color: var(--color-muted);
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 750;
+  gap: var(--space-2);
+  margin: 0 auto;
+}
+
+@media (max-width: 760px) {
+  .scroller {
+    padding: var(--space-4);
+  }
+}
+

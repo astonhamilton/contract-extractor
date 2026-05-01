@@ -32,7 +32,7 @@ def create_model_call(
     """Insert one model-call row."""
     connection.execute(
         """
-        INSERT INTO asst_model_calls (
+        INSERT INTO agent_runtime_model_calls (
             model_call_id, thread_id, turn_id, ordinal, provider, model, status,
             agent_spec_snapshot_json,
             request_json, response_json, usage_json, error_json,
@@ -84,7 +84,7 @@ def update_model_call(
     """Update one model-call row."""
     connection.execute(
         """
-        UPDATE asst_model_calls
+        UPDATE agent_runtime_model_calls
         SET provider = ?, model = ?, status = ?, agent_spec_snapshot_json = ?, request_json = ?, response_json = ?,
             usage_json = ?, error_json = ?, provider_request_id = ?, provider_response_id = ?,
             worker_id = ?, heartbeat_at = ?, started_at = ?, completed_at = ?
@@ -123,7 +123,7 @@ def claim_model_call(
     with sqlite_transaction(connection):
         row = connection.execute(
             """
-            UPDATE asst_model_calls
+            UPDATE agent_runtime_model_calls
             SET status = 'running',
                 worker_id = ?,
                 heartbeat_at = ?,
@@ -159,7 +159,7 @@ def update_model_call_heartbeat(
     """Refresh one running model-call heartbeat timestamp."""
     connection.execute(
         """
-        UPDATE asst_model_calls
+        UPDATE agent_runtime_model_calls
         SET heartbeat_at = ?
         WHERE model_call_id = ?
           AND status = 'running'
@@ -208,8 +208,8 @@ def recover_stale_model_calls(
     rows = connection.execute(
         """
         SELECT mc.model_call_id, mc.turn_id, t.thread_id
-        FROM asst_model_calls mc
-        JOIN asst_turns t ON t.turn_id = mc.turn_id
+        FROM agent_runtime_model_calls mc
+        JOIN agent_runtime_turns t ON t.turn_id = mc.turn_id
         WHERE mc.status = 'running'
           AND mc.heartbeat_at IS NOT NULL
           AND mc.heartbeat_at < ?
@@ -228,7 +228,7 @@ def recover_stale_model_calls(
             with sqlite_transaction(connection):
                 recovered_model_row = connection.execute(
                     """
-                    UPDATE asst_model_calls
+                    UPDATE agent_runtime_model_calls
                     SET status = 'failed',
                         error_json = ?,
                         heartbeat_at = NULL,
@@ -250,7 +250,7 @@ def recover_stale_model_calls(
                     raise _StaleRecoveryConflictError
                 updated_turn = connection.execute(
                     """
-                    UPDATE asst_turns
+                    UPDATE agent_runtime_turns
                     SET status = 'active',
                         phase = 'assembling_context',
                         error_json = ?
